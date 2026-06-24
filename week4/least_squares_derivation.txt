@@ -1,0 +1,107 @@
+﻿Least Squares Derivation in Vector Form
+======================================
+
+Goal
+----
+Fit a linear model to data with n-dimensional input.
+
+Suppose we have m observations. Each observation has n input features:
+
+    x_i = [x_i1, x_i2, ..., x_in]
+
+The model is:
+
+    y_i_hat = beta_0 + beta_1 x_i1 + beta_2 x_i2 + ... + beta_n x_in
+
+To include the intercept beta_0, create a design matrix X with a first column of 1s:
+
+    X = [1  x_11  x_12  ...  x_1n
+         1  x_21  x_22  ...  x_2n
+         .   .     .          .
+         1  x_m1  x_m2  ...  x_mn]
+
+So:
+
+    X is m x (n+1)
+    beta is (n+1) x 1
+    y is m x 1
+
+The prediction vector is:
+
+    y_hat = X beta
+
+Residual Vector
+---------------
+The residual is the difference between predicted and observed values:
+
+    r = X beta - y
+
+Least squares chooses beta to minimize the sum of squared residuals:
+
+    J(beta) = ||r||_2^2
+            = ||X beta - y||_2^2
+
+Expand the Objective
+--------------------
+
+    J(beta) = (X beta - y)^T (X beta - y)
+
+Expanding:
+
+    J(beta) = beta^T X^T X beta - 2 beta^T X^T y + y^T y
+
+Differentiate
+-------------
+Take the gradient with respect to beta:
+
+    grad J(beta) = 2 X^T X beta - 2 X^T y
+
+At the minimum, set the gradient equal to zero:
+
+    2 X^T X beta - 2 X^T y = 0
+
+Divide by 2:
+
+    X^T X beta = X^T y
+
+These are called the normal equations.
+
+Solution
+--------
+If X^T X is invertible:
+
+    beta_hat = (X^T X)^(-1) X^T y
+
+If X^T X is not invertible, use the Moore-Penrose pseudoinverse:
+
+    beta_hat = X^+ y
+
+Geometric Meaning
+-----------------
+The fitted vector X beta_hat is the projection of y onto the column space of X.
+The residual vector:
+
+    r = X beta_hat - y
+
+is orthogonal to every column of X. Therefore:
+
+    X^T r = 0
+
+This gives:
+
+    X^T (X beta_hat - y) = 0
+    X^T X beta_hat = X^T y
+
+which is the same normal equation.
+
+Final Formula
+-------------
+For n-dimensional input, the least squares linear model is:
+
+    y_hat = beta_0 + beta_1 x_1 + ... + beta_n x_n
+
+and the vector solution is:
+
+    beta_hat = (X^T X)^(-1) X^T y
+
+when X has full column rank.
