@@ -1,0 +1,45 @@
+======================================================================
+POWER BI DAX MEASURES FOR TRADE COMPLIANCE DASHBOARD
+======================================================================
+
+-- 1. Total Transaction Volume ($)
+Total Transaction Volume = SUM(powerbi_fact_transactions[Total_Value_USD])
+
+-- 2. Total Transaction Count
+Total Transaction Count = COUNT(powerbi_fact_transactions[Transaction_ID])
+
+-- 3. Total Suspicious Transactions
+Total Suspicious Count = 
+CALCULATE(
+    COUNT(powerbi_fact_transactions[Transaction_ID]),
+    powerbi_fact_transactions[Suspicious_Flag] = 1
+)
+
+-- 4. Suspicious Volume ($)
+Total Suspicious Volume = 
+CALCULATE(
+    SUM(powerbi_fact_transactions[Total_Value_USD]),
+    powerbi_fact_transactions[Suspicious_Flag] = 1
+)
+
+-- 5. Suspicious Rate (%)
+Suspicious Rate % = 
+DIVIDE([Total Suspicious Count], [Total Transaction Count], 0) * 100
+
+-- 6. Average Unified Suspicion Index (USI) Score
+Average USI Score = AVERAGE(powerbi_fact_transactions[USI_Score])
+
+-- 7. High Risk Vendor Count
+High Risk Vendor Count = 
+CALCULATE(
+    DISTINCTCOUNT(powerbi_dim_vendors[Vendor_ID]),
+    powerbi_dim_vendors[Vendor_Risk_Category] = "High Risk"
+)
+
+-- 8. Sanctions Hit Rate (%)
+Sanctions Hit Rate % = 
+DIVIDE(
+    CALCULATE(COUNT(powerbi_fact_transactions[Transaction_ID]), powerbi_fact_transactions[OFAC_Sanction_Flag] = 1),
+    [Total Transaction Count],
+    0
+) * 100
